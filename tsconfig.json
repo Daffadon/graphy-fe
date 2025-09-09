@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "plugins": [
+    {
+      "name": "@0no-co/graphqlsp",
+      "schema": "./schema.graphql"
+    }
+  ]
+}
