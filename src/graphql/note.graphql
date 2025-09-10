@@ -1,0 +1,24 @@
+query Notes {
+  notes {
+    id
+    title
+    description
+  }
+}
+
+query Note($id: ID!) {
+  note(id: $id) {
+    id
+    title
+    description
+    text
+  }
+}
+
+mutation CreateNote($input: NewNote!) {
+  createNote(input: $input)
+}
+
+mutation DeleteNote($input: DeleteNote) {
+  deleteNote(input: $input)
+}
