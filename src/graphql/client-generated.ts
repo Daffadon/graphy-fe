@@ -51,6 +51,7 @@ export type Mutation = {
   deleteNote: Scalars['Boolean']['output'];
   login: Scalars['String']['output'];
   refreshToken: Scalars['String']['output'];
+  updateNote: Scalars['Boolean']['output'];
 };
 
 
@@ -76,6 +77,11 @@ export type MutationLoginArgs = {
 
 export type MutationRefreshTokenArgs = {
   input: RefreshTokenInput;
+};
+
+
+export type MutationUpdateNoteArgs = {
+  input: UpdatedNote;
 };
 
 export type NewNote = {
@@ -113,6 +119,13 @@ export type RefreshTokenInput = {
   token: Scalars['String']['input'];
 };
 
+export type UpdatedNote = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  noteid: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   email: Scalars['String']['output'];
@@ -146,6 +159,13 @@ export type DeleteNoteMutationVariables = Exact<{
 
 
 export type DeleteNoteMutation = { __typename?: 'Mutation', deleteNote: boolean };
+
+export type UpdateNoteMutationVariables = Exact<{
+  input: UpdatedNote;
+}>;
+
+
+export type UpdateNoteMutation = { __typename?: 'Mutation', updateNote: boolean };
 
 export type CreateUserMutationVariables = Exact<{
   input: NewUser;
@@ -321,6 +341,31 @@ export const useDeleteNoteMutation = <
 
 
 useDeleteNoteMutation.fetcher = (dataSource: { endpoint: string, fetchParams?: RequestInit }, variables?: DeleteNoteMutationVariables) => fetcher<DeleteNoteMutation, DeleteNoteMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, DeleteNoteDocument, variables);
+
+export const UpdateNoteDocument = `
+    mutation UpdateNote($input: UpdatedNote!) {
+  updateNote(input: $input)
+}
+    `;
+
+export const useUpdateNoteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateNoteMutation, TError, UpdateNoteMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateNoteMutation, TError, UpdateNoteMutationVariables, TContext>(
+      {
+    mutationKey: ['UpdateNote'],
+    mutationFn: (variables?: UpdateNoteMutationVariables) => fetcher<UpdateNoteMutation, UpdateNoteMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateNoteDocument, variables)(),
+    ...options
+  }
+    )};
+
+
+useUpdateNoteMutation.fetcher = (dataSource: { endpoint: string, fetchParams?: RequestInit }, variables: UpdateNoteMutationVariables) => fetcher<UpdateNoteMutation, UpdateNoteMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateNoteDocument, variables);
 
 export const CreateUserDocument = `
     mutation CreateUser($input: NewUser!) {

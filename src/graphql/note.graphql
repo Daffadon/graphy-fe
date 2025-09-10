@@ -22,3 +22,7 @@ mutation CreateNote($input: NewNote!) {
 mutation DeleteNote($input: DeleteNote) {
   deleteNote(input: $input)
 }
+
+mutation UpdateNote($input: UpdatedNote!) {
+  updateNote(input: $input)
+}
