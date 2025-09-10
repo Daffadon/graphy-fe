@@ -27,6 +27,13 @@ input NewNote {
   text: String!
 }
 
+input UpdatedNote {
+  title: String
+  description: String
+  text: String
+  noteid: String!
+}
+
 input DeleteNote {
   id: ID!
 }
@@ -52,5 +59,6 @@ type Mutation {
   refreshToken(input: RefreshTokenInput!): String!
 
   createNote(input: NewNote!): Boolean!
+  updateNote(input: UpdatedNote!): Boolean!
   deleteNote(input: DeleteNote): Boolean!
 }
