@@ -70,9 +70,7 @@ const Register = () => {
           toast.success("Register Successful", {
             description: "Your account has been created.",
           });
-          setTimeout(() => {
-            navigate("/login");
-          }, 1000);
+          navigate("/login");
         },
       }
     );
