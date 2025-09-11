@@ -13,9 +13,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useCreateUserMutation } from "@/graphql/client-generated";
+import { toast } from "sonner";
 
 const Register = () => {
+  const navigate = useNavigate();
   const formSchema = z.object({
     email: z.email({ message: "Invalid email address." }),
     fullname: z.string().min(2, {
@@ -35,8 +38,44 @@ const Register = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const m = useCreateUserMutation(
+    {
+      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+      fetchParams: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    },
+    {
+      onError: (error: Error) => {
+        toast.error("Register Failed", {
+          description: error.message,
+        });
+      },
+    }
+  );
+
+  function onSubmit(v: z.infer<typeof formSchema>) {
+    m.mutate(
+      {
+        input: {
+          email: v.email,
+          fullname: v.fullname,
+          password: v.password,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success("Register Successful", {
+            description: "Your account has been created.",
+          });
+          setTimeout(() => {
+            navigate("/login");
+          }, 1000);
+        },
+      }
+    );
   }
   return (
     <div className="flex flex-col gap-4 justify-center items-center h-screen">
