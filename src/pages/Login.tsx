@@ -13,9 +13,13 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useLoginMutation } from "@/graphql/client-generated";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 const Login = () => {
+  const navigate = useNavigate();
   const formSchema = z.object({
     email: z.email({ message: "Invalid email address." }),
     password: z
@@ -31,8 +35,42 @@ const Login = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const m = useLoginMutation(
+    {
+      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+      fetchParams: {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    },
+    {
+      onError: (error: Error) => {
+        toast.error("Login Failed", {
+          description: error.message,
+        });
+      },
+    }
+  );
+
+  function onSubmit(v: z.infer<typeof formSchema>) {
+    m.mutate(
+      {
+        input: {
+          email: v.email,
+          password: v.password,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          Cookies.set("ACCESS_TOKEN", data.login, { path: "/" });
+          toast.success("Login Success", {
+            description: `Welcome ${v.email}`,
+          });
+          navigate("/note");
+        },
+      }
+    );
   }
   return (
     <div className="flex flex-col gap-4 justify-center items-center h-screen">
