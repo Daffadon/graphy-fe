@@ -6,26 +6,24 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useState } from "react";
 import NoteDialog from "./NoteDialog";
 import NoteDetailDialog from "./NoteDetailDialog";
 import NoteDeleteDialog from "./NoteDeleteDialog";
+import { useNoteCard } from "./notecard.hook";
+import type { INoteCard } from "@/types/note_type";
 
-interface INoteCard {
-  noteid: string;
-  title: string;
-  description: string;
-}
+
 
 const NoteCard = ({ noteid, title, description }: INoteCard) => {
-  const [onUpdate, setOnUpdate] = useState<boolean>(false);
-  const [onDetail, setOnDetail] = useState<boolean>(false);
-  const [onDelete, setOnDelete] = useState<boolean>(false);
-
-  const updateFromDetail = () => {
-    setOnDetail(false);
-    setOnUpdate(true);
-  };
+  const {
+    onUpdate,
+    onDetail,
+    onDelete,
+    setOnDelete,
+    setOnUpdate,
+    setOnDetail,
+    updateFromDetail,
+  } = useNoteCard();
   return (
     <>
       <Card className="w-full h-full">
