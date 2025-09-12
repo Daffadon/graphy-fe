@@ -7,7 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useDeleteNoteMutation } from "@/graphql/client-generated";
+import { useQueryClient } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import type { Dispatch } from "react";
+import { toast } from "sonner";
 
 interface INoteDeleteDialog {
   open: boolean;
@@ -21,8 +25,39 @@ const NoteDeleteDialog = ({
   noteid,
   title,
 }: INoteDeleteDialog) => {
+  const token = Cookies.get("ACCESS_TOKEN");
+  const queryClient = useQueryClient();
+  const m = useDeleteNoteMutation(
+    {
+      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+      fetchParams: {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    },
+    {
+      onError: (error: Error) => {
+        toast.error("Delete Failed", {
+          description: error.message,
+        });
+      },
+    }
+  );
   const deleteHandler = (noteid: string) => {
-    console.log("deleted note", noteid);
+    m.mutate(
+      { input: { id: noteid } },
+      {
+        onSuccess: () => {
+          toast.success("Note deleted successfully");
+          if (open) {
+            setOpen(false);
+          }
+          queryClient.invalidateQueries({ queryKey: ["Notes"] });
+        },
+      }
+    );
   };
   return (
     <Dialog
@@ -37,7 +72,10 @@ const NoteDeleteDialog = ({
     >
       <DialogContent className="sm:max-w-sm grid gap-12">
         <DialogHeader className="mt-4">
-          <DialogTitle>Note {title} wil be deleted. Are you sure?</DialogTitle>
+          <DialogTitle>
+            Note <span className="text-red-600">{title}</span> wil be deleted.
+            Are you sure?
+          </DialogTitle>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
