@@ -3,10 +3,8 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
 import NoteDialog from "./NoteDialog";
@@ -17,10 +15,9 @@ interface INoteCard {
   noteid: string;
   title: string;
   description: string;
-  content: string;
 }
 
-const NoteCard = ({ noteid, title, description, content }: INoteCard) => {
+const NoteCard = ({ noteid, title, description }: INoteCard) => {
   const [onUpdate, setOnUpdate] = useState<boolean>(false);
   const [onDetail, setOnDetail] = useState<boolean>(false);
   const [onDelete, setOnDelete] = useState<boolean>(false);
@@ -33,8 +30,9 @@ const NoteCard = ({ noteid, title, description, content }: INoteCard) => {
     <>
       <Card className="w-full h-full">
         <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
+          <p className="font-bold text-2xl truncate max-w-xs text-black">
+            {title}
+          </p>
           <CardAction className="flex gap-2">
             <Button
               className="cursor-pointer"
@@ -56,7 +54,7 @@ const NoteCard = ({ noteid, title, description, content }: INoteCard) => {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <p>Card Content</p>
+          <p>{description}</p>
         </CardContent>
         <CardFooter className="flex justify-end">
           <CardAction>
@@ -77,23 +75,13 @@ const NoteCard = ({ noteid, title, description, content }: INoteCard) => {
           open={onDetail}
           setOpen={setOnDetail}
           updateHandler={updateFromDetail}
-          content={content}
-          description={description}
-          title={title}
+          noteid={noteid}
         />
       ) : (
         ""
       )}
       {onUpdate ? (
-        <NoteDialog
-          withTrigger={false}
-          open={onUpdate}
-          setOpen={setOnUpdate}
-          title={title}
-          description={description}
-          content={content}
-          noteid={noteid}
-        />
+        <NoteDialog open={onUpdate} setOpen={setOnUpdate} noteid={noteid} />
       ) : (
         ""
       )}
