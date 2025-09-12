@@ -8,56 +8,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useNoteQuery } from "@/graphql/client-generated";
-import Cookies from "js-cookie";
-import { type Dispatch } from "react";
-import { toast } from "sonner";
+import type { INoteDetailDialog } from "@/types/note_type";
+import { useNoteDetail } from "./notedetail.hook";
 
-interface INoteDetailDialog {
-  open: boolean;
-  setOpen: Dispatch<React.SetStateAction<boolean>>;
-  updateHandler: () => void;
-  noteid: string;
-}
 const NoteDetailDialog = ({
   open,
   setOpen,
   updateHandler,
   noteid,
 }: INoteDetailDialog) => {
-  const token = Cookies.get("ACCESS_TOKEN");
-  const { data, isFetching } = useNoteQuery(
-    {
-      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
-      fetchParams: {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    },
-    { id: noteid },
-    {
-      staleTime: 1000 * 60 * 5,
-      queryKey: ["Note", noteid],
-    }
-  );
-  if (isFetching) {
-    toast.loading("wait a moment", { id: "loading-toast" });
-  }
-
-  if (data) {
-    toast.dismiss("loading-toast");
-  }
-
+  const { data } = useNoteDetail(noteid);
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
         if (!open) {
-          if (setOpen) {
-            setOpen(false);
-          }
+          setOpen(false);
         }
       }}
     >
