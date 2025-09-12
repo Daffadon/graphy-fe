@@ -7,66 +7,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeleteNoteMutation } from "@/graphql/client-generated";
-import { useQueryClient } from "@tanstack/react-query";
-import Cookies from "js-cookie";
-import type { Dispatch } from "react";
-import { toast } from "sonner";
+import type { INoteDeleteDialog } from "@/types/note_type";
+import { useNoteDeleteDialog } from "./notedelete.hook";
 
-interface INoteDeleteDialog {
-  open: boolean;
-  setOpen: Dispatch<React.SetStateAction<boolean>>;
-  noteid: string;
-  title: string;
-}
 const NoteDeleteDialog = ({
   open,
   setOpen,
   noteid,
   title,
 }: INoteDeleteDialog) => {
-  const token = Cookies.get("ACCESS_TOKEN");
-  const queryClient = useQueryClient();
-  const m = useDeleteNoteMutation(
-    {
-      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
-      fetchParams: {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    },
-    {
-      onError: (error: Error) => {
-        toast.error("Delete Failed", {
-          description: error.message,
-        });
-      },
-    }
-  );
-  const deleteHandler = (noteid: string) => {
-    m.mutate(
-      { input: { id: noteid } },
-      {
-        onSuccess: () => {
-          toast.success("Note deleted successfully");
-          if (open) {
-            setOpen(false);
-          }
-          queryClient.invalidateQueries({ queryKey: ["Notes"] });
-        },
-      }
-    );
-  };
+  const { deleteHandler } = useNoteDeleteDialog(open, setOpen);
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
         if (!open) {
-          if (setOpen) {
-            setOpen(false);
-          }
+          setOpen(false);
         }
       }}
     >
