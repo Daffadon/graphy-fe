@@ -1,0 +1,11 @@
+services:
+  graphy-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_GRAPHQL_ENDPOINT=http://localhost:8080/gq
+    restart: "unless-stopped"
+    container_name: graphy-fe
+    ports:
+      - "80:80"
