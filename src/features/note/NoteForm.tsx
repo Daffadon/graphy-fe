@@ -1,9 +1,9 @@
 import NoteDialog from "@/components/pages/note/NoteDialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useNoteForm } from "./noteform.hook";
 
 const NoteForm = () => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const { openDialog, setOpenDialog } = useNoteForm();
   return (
     <div className="flex justify-center items-center h-full">
       <Button
