@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
-import Note from "../pages/Note";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
+import Note from "../pages/note/Note";
+import Login from "../pages/login/Login";
+import Register from "../pages/register/Register";
 import PublicRoute from "./visibility/PublicRoute";
 import PrivateRoute from "./visibility/PrivateRoute";
 

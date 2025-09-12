@@ -10,71 +10,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router";
-import { useCreateUserMutation } from "@/graphql/client-generated";
-import { toast } from "sonner";
+import { Link } from "react-router";
+import { useRegister } from "./register.hook";
 
 const Register = () => {
-  const navigate = useNavigate();
-  const formSchema = z.object({
-    email: z.email({ message: "Invalid email address." }),
-    fullname: z.string().min(2, {
-      message: "fullname must be at least 2 characters.",
-    }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      fullname: "",
-      password: "",
-    },
-  });
-
-  const m = useCreateUserMutation(
-    {
-      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
-      fetchParams: {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    },
-    {
-      onError: (error: Error) => {
-        toast.error("Register Failed", {
-          description: error.message,
-        });
-      },
-    }
-  );
-
-  function onSubmit(v: z.infer<typeof formSchema>) {
-    m.mutate(
-      {
-        input: {
-          email: v.email,
-          fullname: v.fullname,
-          password: v.password,
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Register Successful", {
-            description: "Your account has been created.",
-          });
-          navigate("/login");
-        },
-      }
-    );
-  }
+  const { form, onSubmit } = useRegister();
   return (
     <div className="flex flex-col gap-4 justify-center items-center h-screen">
       <h1 className="font-bold text-2xl">Register</h1>

@@ -10,68 +10,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router";
-import { useLoginMutation } from "@/graphql/client-generated";
-import { toast } from "sonner";
-import Cookies from "js-cookie";
+import { Link } from "react-router";
+import { useLogin } from "./login.hook";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const formSchema = z.object({
-    email: z.email({ message: "Invalid email address." }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  const m = useLoginMutation(
-    {
-      endpoint: import.meta.env.VITE_GRAPHQL_ENDPOINT,
-      fetchParams: {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    },
-    {
-      onError: (error: Error) => {
-        toast.error("Login Failed", {
-          description: error.message,
-        });
-      },
-    }
-  );
-
-  function onSubmit(v: z.infer<typeof formSchema>) {
-    m.mutate(
-      {
-        input: {
-          email: v.email,
-          password: v.password,
-        },
-      },
-      {
-        onSuccess: (data) => {
-          Cookies.set("ACCESS_TOKEN", data.login, { path: "/" });
-          toast.success("Login Success", {
-            description: `Welcome ${v.email}`,
-          });
-          navigate("/note");
-        },
-      }
-    );
-  }
+  const { form, onSubmit } = useLogin();
   return (
     <div className="flex flex-col gap-4 justify-center items-center h-screen">
       <h1 className="font-bold text-2xl">Login</h1>
